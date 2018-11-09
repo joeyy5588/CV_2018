@@ -57,5 +57,7 @@ F = np.dot(V1, LDA_V)
 f = F[:, 1]
 f = f.reshape(56, 46)
 plt.imsave(sys.argv[2], f, cmap = 'gray')
+'''
 plt.imshow(f, cmap = 'gray')
 plt.show()
+'''

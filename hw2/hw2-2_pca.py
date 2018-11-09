@@ -106,7 +106,7 @@ LDA_V = np.real(LDA_V)
 LDA_V = LDA_V[:, : 40]
 F = np.dot(V1, LDA_V)
 
-
+'''
 for i in range(5):
 	f = F[:, i]
 	print(f)
@@ -114,7 +114,7 @@ for i in range(5):
 	plt.imshow(f, cmap = 'gray')
 	plt.imsave('hw2-2_output/fisherface_' + str(i), f, cmap = 'gray')
 	plt.show()
-
+'''
 '''
 #2(b)_2
 
@@ -130,17 +130,18 @@ plt.show()
 '''
 
 #2(c)
+'''
 k_list = [1, 3, 5]
 n_list = [3, 10, 39]
 slicetrain = [0,0,0]
 slicelabel = [0,0,0]
-randidx = np.random.randint(len(train_data[0]), size = 100)
+randidx = np.random.randint(len(train_data[0]), size = 150)
 slicetrain[0] = train_data[:, randidx]
 slicelabel[0] = trainlabel[randidx]
-randidx = np.random.randint(len(train_data[0]), size = 100)
+randidx = np.random.randint(len(train_data[0]), size = 150)
 slicetrain[1] = train_data[:, randidx]
 slicelabel[1] = trainlabel[randidx]
-randidx = np.random.randint(len(train_data[0]), size = 100)
+randidx = np.random.randint(len(train_data[0]), size = 150)
 slicetrain[2] = train_data[:, randidx]
 slicelabel[2] = trainlabel[randidx]
 slicetrain = np.array(slicetrain)
@@ -167,10 +168,10 @@ for k in k_list:
 			v2_pca = np.dot(V[:, :n].transpose(), slicetrain[v2] - mean_face).transpose()
 			v2_lda = np.dot(LDA_V[:, :n].transpose(), v2_low_dim_test).transpose()
 
-			print('v1', j, k, n, 'pca', np.sum(slicelabel[v1] == neigh_pca.predict(v1_pca)))
-			print('v1', j, k, n, 'lda', np.sum(slicelabel[v1] == neigh_lda.predict(v1_lda)))
-			print('v2', j, k, n, 'pca', np.sum(slicelabel[v2] == neigh_pca.predict(v2_pca)))
-			print('v2', j, k, n, 'lda', np.sum(slicelabel[v2] == neigh_lda.predict(v2_lda)))
+			print('v1', j, k, n, 'pca', np.sum(slicelabel[v1] == neigh_pca.predict(v1_pca))*100/150)
+			print('v1', j, k, n, 'lda', np.sum(slicelabel[v1] == neigh_lda.predict(v1_lda))*100/150)
+			print('v2', j, k, n, 'pca', np.sum(slicelabel[v2] == neigh_pca.predict(v2_pca))*100/150)
+			print('v2', j, k, n, 'lda', np.sum(slicelabel[v2] == neigh_lda.predict(v2_lda))*100/150)
 
 			t_low_dim_test = np.dot(V[:, :240].transpose(), test_data - mean_face)
 			t_pca = np.dot(V[:, :n].transpose(), test_data - mean_face).transpose()
@@ -178,5 +179,5 @@ for k in k_list:
 			print('t', j, k, n, 'pca', np.sum(label == neigh_pca.predict(t_pca))*100/120)
 			print('t', j, k, n, 'lda', np.sum(label == neigh_lda.predict(t_lda))*100/120)
 
-
+'''
 
