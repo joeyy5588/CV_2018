@@ -17,6 +17,7 @@ from dataloader import listflowfile as lt
 import modifylistflowfile as mlt
 from dataloader import SecenFlowLoader as DA
 from models import *
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description='PSMNet')
 parser.add_argument('--maxdisp', type=int ,default=192,
@@ -127,11 +128,22 @@ def test(imgL,imgR,disp_true):
         return loss
 
 def adjust_learning_rate(optimizer, epoch):
-    lr = 1e-4
+    lr = 5e-5
+    if epoch > 200:
+        lr = 5e-5
     print(lr)
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
+def plotData(plt, x_data, y_data, y_label):
+    x = [p for p in x_data]
+    y = [q for q in y_data]
+    plt.title('Learning Curve')
+    plt.xlabel('Epoch')
+    plt.ylabel(y_label)
+    plt.plot(x, y, '-.', label = 'train_loss')
+    plt.savefig(y_label)
+    plt.close('all')
 
 def main():
     min_epoch = 0
@@ -151,7 +163,7 @@ def main():
          print('Iter %d training loss = %.3f , time = %.2f' %(batch_idx, loss, time.time() - start_time))
          total_train_loss += loss
        print('epoch %d total training loss = %.3f' %(epoch, total_train_loss/len(TrainImgLoader)))
-       loss_list.append(total_train_loss)
+       loss_list.append(total_train_loss/5)
        
        #SAVE
        savefilename = os.path.join(args.savemodel,'checkpoint_'+str(epoch)+'.tar')
@@ -165,6 +177,8 @@ def main():
     print(loss_list_idx[:8])
     print(sorted_loss_list[:8])
     print('full training time = %.2f HR' %((time.time() - start_full_time)/3600))
+    epoch_list = list(range(1, args.epochs+1))
+    plotData(plt, epoch_list, loss_list, 'Training loss')
 
     #------------- TEST ------------------------------------------------------------
     total_test_loss = 0

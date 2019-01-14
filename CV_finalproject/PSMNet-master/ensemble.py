@@ -56,15 +56,17 @@ elif args.model == 'basic':
 else:
     print('no model')
 
+epoch_list = [990, 986, 988, 922, 991, 994, 993, 987]
+epoch_list = epoch_list[:4]
 model_list = []
-for i in range(10):
+for i in range(len(epoch_list)):
     if args.model == 'stackhourglass':
         model = stackhourglass(args.maxdisp)
     elif args.model == 'basic':
         model = basic(args.maxdisp)
     model = nn.DataParallel(model, device_ids=[0])
     model.cuda()
-    state_dict = torch.load('trained/checkpoint_' + str(1000-i) + '.tar')
+    state_dict = torch.load('trained/checkpoint_' + str(epoch_list[i]) + '.tar')
     model.load_state_dict(state_dict['state_dict'])
     model_list.append(model)
     #print(model_list)
@@ -91,16 +93,19 @@ def main():
     total_loss = 0
     for batch_idx, (imgL, imgR, disp_L) in enumerate(TestImgLoader):
         pred_disp = 0
-        for i in range(10):
-            model = model_list[i]
-            pred_disp += test(imgL,imgR, model)
-        pred_disp /= 10
+        min_loss = 10
         disp_GT = disp_L.cpu().numpy().squeeze(0)
-        loss = cal_avgerr(disp_GT, pred_disp)
-        total_loss += loss
-        print(loss)
+        for i in range(len(epoch_list)):
+            model = model_list[i]
+            temp_disp = test(imgL,imgR, model)
+            loss = cal_avgerr(disp_GT, temp_disp)
+            if loss < min_loss:
+                pred_disp = temp_disp
+                min_loss = loss
+        total_loss += min_loss
+        print(min_loss)
         writePFM('output/TL' + str(batch_idx) + '.pfm', pred_disp)
-    print(total_loss/10)
+    print('total loss: ', total_loss/10)
 
 if __name__ == '__main__':
    main()
